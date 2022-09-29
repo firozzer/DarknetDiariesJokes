@@ -43,15 +43,17 @@ def getTimestampsFromGoogle(latestEpNo, roughCut):
         stuffFound = result.alternatives[0].transcript.lower()
         if 'cylinder' in stuffFound and 'master' in stuffFound and not cutStartObtained:
             for wordData in result.alternatives[0].words:
-                if wordData.word.lower() == 'cylinder': 
+                zeWord = wordData.word.lower()
+                if zeWord == 'cylinder': 
                     print(wordData)
                     cutStart = float(str(wordData.end_time.seconds) + '.'+ str(wordData.end_time.microseconds)[:2]) + 0.2
                     cutStartObtained = True
                     print("So, start cutting at", cutStart)
                     break
-        if cutStartObtained and ('diaries' in stuffFound or 'diary' in stuffFound):
+        if cutStartObtained and ('diaries' in stuffFound or 'diary' in stuffFound or 'fairies' in stuffFound or 'fairy' in stuffFound):
             for wordData in result.alternatives[0].words:
-                if wordData.word.lower() == 'diary' or wordData.word.lower() == "diaries":
+                zeWord = wordData.word.lower()
+                if zeWord == 'diary' or zeWord == "diaries" or zeWord == 'fairy' or zeWord == "fairies":
                     print(wordData)
                     cutEnd = float(str(wordData.end_time.seconds) + '.'+ str(wordData.end_time.microseconds)[:2]) + 2
                     if cutStart > cutEnd:

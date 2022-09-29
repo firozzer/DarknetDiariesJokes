@@ -1,4 +1,4 @@
-import requests, re, subprocess, os, json, time
+import requests, re, subprocess, os, json, time, datetime
 
 from bs4 import BeautifulSoup
 
@@ -83,10 +83,16 @@ subprocess.run(f"""ffmpeg -f concat -i concat.txt -c copy ytVidNew.mkv; rm conca
 # upload to YouTube
 ytFilename = "ytVidNew.mkv"
 ytTitle = f"Darknet Diaries Jokes (updated till Ep {latestEpNo} {epName})"
-ytDesc = "All the jokes that Jack Rhysider cracks at the end of each show."
 ytTags = ['darknet diaries', 'jack rhysider', 'cybersecurity', 'tech', 'hacking', 'jokes']
 ytCategory = "24" # apparently for enternationament
-ytPrivacyStatus = 'private'
+ytPrivacyStatus = 'public'
+
+# constructing new Youtube description
+with open("descYTVid.txt") as f: ytDescOld = f.read()
+durationOfLastYTVid = int(float(subprocess.check_output(f"ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ytVid.mkv", shell=True).decode('utf-8').strip()[:-4]))
+tsOfNewAddition = str(datetime.timedelta(seconds=durationOfLastYTVid))
+ytDesc = ytDescOld + f"\n{tsOfNewAddition} - Ep {latestEpNo} {epName}"
+
 newVidID = uploadVideoToYoutube(ytFilename,ytTitle,ytDesc,ytTags,ytCategory,ytPrivacyStatus)
 
 succeeded = deleteFileFromGCS(f"{latestEpNo}c.flac")
@@ -101,11 +107,11 @@ print('Done. Deleting old video from YouTube...')
 deleteVideoFromYoutube(oldVidID)
 print("Done.")
 
-#upadte info.json with new epNo
-with open('info.json') as f: jsonData = json.load(f)
+#upadte info.json & descYTVid.txt with new data
 jsonData['lastEpUppdToYT'] = latestEpNo
 jsonData['ytVidID'] = newVidID
 with open('info.json', "w") as f: json.dump(jsonData, f)
+with open("descYTVid.txt", 'w') as f: f.write(ytDesc)
 
 # Deleting ep.mp3, epc.flac, epf.mp3, epf.mkv, ep.jpg, epf.jpg, old YT vid & GCS:epc.flac.
 subprocess.run(f"rm ytVid.mkv {latestEpNo}f.* {latestEpNo}c.flac {latestEpNo}.*; mv ytVidNew.mkv ytVid.mkv", shell=True)

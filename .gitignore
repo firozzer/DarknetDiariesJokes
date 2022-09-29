@@ -1,0 +1,13 @@
+token_youtube_v3.pickle
+oauthCS.json
+OrZur
+info.json
+ytCS.json
+timestamps.txt
+*.mkv
+googleSAfrzecoolKey.json
+calibri.ttf
+__pycache__/
+eps/
+artwork/
+vosk-model-en-us-0.22/

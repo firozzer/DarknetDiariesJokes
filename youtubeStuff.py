@@ -7,7 +7,7 @@ from googleapiclient.http import MediaFileUpload
 
 
 def createServiceObj():
-    CLIENT_SECRET_FILE = "ytCS.json"
+    CLIENT_SECRET_FILE = "oauthCS.json"
     API_SERVICE_NAME = 'youtube'
     API_VERSION = 'v3'
     SCOPES = ['https://www.googleapis.com/auth/youtube']
