@@ -1,79 +1,6 @@
 All the jokes Jack Rhysider cracks at end of each show... updated automatically everytime he drops a new episode.
 
-00:00 Ep 47 Project Raven
-0:00:08 - Ep 48 Operation Socialist 
-0:00:18 - Ep 49 Elliot 
-0:00:27 - Ep 50 Operation Glowing Symphony 
-0:00:36 - Ep 51 The Indo-Pak Conflict 
-0:00:46 - Ep 52 Magecart 
-0:00:55 - Ep 53 Shadow Brokers 
-0:01:06 - Ep 54 NotPetya 
-0:01:19 - Ep 55 NoirNet 
-0:01:33 - Ep 56 Jordan 
-0:01:42 - Ep 57 MS08-067 
-0:01:51 - Ep 58 OxyMonster 
-0:01:58 - Ep 59 The Courthouse 
-0:02:09 - Ep 60 dawgyg 
-0:02:19 - Ep 61 Samy 
-0:02:28 - Ep 62 Cam 
-0:02:38 - Ep 63 w0rmer 
-0:02:48 - Ep 64 The Athens Shadow Games 
-0:02:59 - Ep 65 PSYOP 
-0:03:09 - Ep 66 Freakyclown 
-0:03:21 - Ep 67 The Big House 
-0:03:34 - Ep 68 Triton 
-0:03:51 - Ep 69 Human Hacker 
-0:04:02 - Ep 70 Ghost Exodus 
-0:04:15 - Ep 71 Information Monopoly 
-0:04:23 - Ep 72 Bangladesh Bank Heist 
-0:04:34 - Ep 73 WannaCry 
-0:04:44 - Ep 74 Mikko 
-0:04:56 - Ep 75 Compromised Comms 
-0:05:06 - Ep 76 Knaves Out 
-0:05:15 - Ep 77 Olympic Destroyer 
-0:05:26 - Ep 78 Nerdcore 
-0:05:36 - Ep 79 Dark Basin 
-0:05:45 - Ep 80 The Whistleblower 
-0:05:57 - Ep 81 The Vendor 
-0:06:06 - Ep 82 Master of Pwn 
-0:06:15 - Ep 83 NSA Cryptologists 
-0:06:23 - Ep 84 Jet-setters 
-0:06:31 - Ep 85 Cam the Carder 
-0:06:41 - Ep 86 The LinkedIn Incident 
-0:06:52 - Ep 87 Guild of the Grumpy Old Hackers 
-0:07:03 - Ep 88 Victor 
-0:07:12 - Ep 89 Cybereason Molerats in the Cloud 
-0:07:24 - Ep 90 Jenny 
-0:07:33 - Ep 91 webjedi 
-0:07:43 - Ep 92 The Pirate Bay 
-0:07:52 - Ep 93 Kik 
-0:08:02 - Ep 94 Mariposa Botnet 
-0:08:13 - Ep 95 Jon & Brian's Big Adventure 
-0:08:23 - Ep 96 The Police Station Incident 
-0:08:33 - Ep 97 The Pizza Problem 
-0:08:45 - Ep 98 Zero Day Brokers 
-0:09:00 - Ep 99 The Spy 
-0:09:10 - Ep 100 NSO 
-0:09:21 - Ep 101 Lotería 
-0:09:31 - Ep 102 Money Maker 
-0:09:59 - Ep 103 Cloud Hopper 
-0:10:08 - Ep 104 Arya 
-0:10:19 - Ep 105 Secret Cells 
-0:10:28 - Ep 106 @Tennessee 
-0:10:35 - Ep 107 Alethe 
-0:10:49 - Ep 108 Marq 
-0:10:59 - Ep 109 TeaMp0isoN 
-0:11:12 - Ep 110 Spam Botnets 
-0:11:22 - Ep 111 ZeuS 
-0:11:33 - Ep 112 Dirty Coms 
-0:11:44 - Ep 113 Adam 
-0:11:59 - Ep 114 HD 
-0:12:12 - Ep 115 Player Cheater Developer Spy 
-0:12:27 - Ep 116 Mad Dog 
-0:12:41 - Ep 117 Daniel the Paladin 
-0:13:04 - Ep 118 Hot Swaps 
-0:13:16 - Ep 119 Hot Wallets 
-0:13:26 - Ep 120 Voulnet 
+0:00:00 - Ep 47 Project Raven
 0:00:08 - Ep 48 Operation Socialist 
 0:00:18 - Ep 49 Elliot 
 0:00:27 - Ep 50 Operation Glowing Symphony 
@@ -146,5 +73,7 @@ All the jokes Jack Rhysider cracks at end of each show... updated automatically 
 0:12:41 - Ep 117 Daniel the Paladin 
 0:12:54 - Ep 118 Hot Swaps
 0:13:04 - Ep 119 Hot Wallets
-0:13:16 - Ep 120 Voulnet
-0:13:27 - Ep 121 Ed
+0:13:16 - Ep 120 Voulnet 
+0:13:26 - Ep 121 Ed
+0:13:42 - Ep 122 Lisa  
+0:13:51 - Ep 123 Newswires
