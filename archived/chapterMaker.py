@@ -2,7 +2,7 @@ import re, pyperclip
 import datetime
 import os
 
-with open("tses extracted by ffmpeg.txt") as f:
+with open("ffout.txt") as f:
     data = f.read()
 
 sRes = re.findall("pts_time:(.+)pos:", data)

@@ -55,13 +55,13 @@ roughCut = 90
 # passing af with s16 bit depth to create smaller (half size) file. ac 1 specifies only 1 audio channel needed othewse Google gets thrown.
 subprocess.run(f"ffmpeg -y -sseof -{roughCut} -i {latestEpNo}.mp3 -af aformat=s16:44100 -ac 1 {latestEpNo}c.flac", shell=True)
 
-#uploading to GCS so GTTS can process it
+#uploading to GCS so GSTT can process it
 succeeded = uploadFileToGCS(f"{latestEpNo}c.flac")
 if not succeeded: 
     print("Problem in gcs.py upload, exiting.")
     exit()
 
-# get exact timestamps using Google TTS
+# get exact timestamps using Google STT
 cutStart, cutEnd = getTimestampsFromGoogle(latestEpNo, roughCut)
 
 # get final joke cut audio
@@ -74,18 +74,18 @@ if not succeeded:
     exit()
 
 # add jpg to mp3
-subprocess.run(f"ffmpeg -y -loop 1 -framerate 5 -i {latestEpNo}f.jpg -i {latestEpNo}f.mp3 -shortest -acodec copy -vcodec mjpeg {latestEpNo}f.mkv", shell=True)
+subprocess.run(f"""ffmpeg -y -loop 1 -i {latestEpNo}f.jpg -i {latestEpNo}f.mp3 -shortest -acodec copy -vcodec libx265 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" {latestEpNo}f.mkv""", shell=True)
 
 # join new ep to old eps
 with open("concat.txt", 'w') as f: f.write(f"file 'ytVid.mkv'\nfile '{latestEpNo}f.mkv")
-subprocess.run(f"""ffmpeg -f concat -i concat.txt -c copy ytVidNew.mkv; rm concat.txt""", shell=True)
+subprocess.check_output(f"""ffmpeg -y -f concat -i concat.txt -c copy ytVidNew.mkv; rm concat.txt""", shell=True)
 
 # upload to YouTube
 ytFilename = "ytVidNew.mkv"
 ytTitle = f"Darknet Diaries Jokes (updated till Ep {latestEpNo} {epName})"
 ytTags = ['darknet diaries', 'jack rhysider', 'cybersecurity', 'tech', 'hacking', 'jokes']
 ytCategory = "24" # apparently for enternationament
-ytPrivacyStatus = 'public'
+ytPrivacyStatus = 'private'
 
 # constructing new Youtube description
 with open("descYTVid.txt") as f: ytDescOld = f.read()
@@ -103,11 +103,12 @@ if not succeeded:
 print('Waiting for uploaded video to get processed...')
 while getYTVidStatus(newVidID) != 'processed':
     time.sleep(30)
-print('Done. Deleting old video from YouTube...')
-deleteVideoFromYoutube(oldVidID)
-print("Done.")
+# print('Done. Deleting old video from YouTube...')
+# deleteVideoFromYoutube(oldVidID)
+# print("Done.")
 
 #upadte info.json & descYTVid.txt with new data
+with open('info.json') as f: jsonData = json.load(f) # ncsry to open again as GSTT has been updated in file
 jsonData['lastEpUppdToYT'] = latestEpNo
 jsonData['ytVidID'] = newVidID
 with open('info.json', "w") as f: json.dump(jsonData, f)

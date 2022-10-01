@@ -1,13 +1,15 @@
-token_youtube_v3.pickle
-oauthCS.json
-OrZur
-info.json
-ytCS.json
-timestamps.txt
-*.mkv
-googleSAfrzecoolKey.json
-calibri.ttf
-__pycache__/
-eps/
-artwork/
-vosk-model-en-us-0.22/
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!main.py
+!spRecogGoogle.py
+!youtubeStuff.py
+!gcs.py
+!imgPrsg.py
+
+
+# ...even if they are in subdirectories
+!*/
+

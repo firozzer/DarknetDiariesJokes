@@ -15,11 +15,11 @@ def getTimestampsFromGoogle(latestEpNo, roughCut):
         speech_contexts = [speech_context]
     )
 
-    # check TTS usage secs if beyond free quota then exit
+    # check STT usage secs if beyond free quota then exit
     with open('info.json') as f: jsonData = json.load(f)
-    gglTTSUsageSecs = jsonData['GoogleTTSUsageSecs']
-    if gglTTSUsageSecs > 3400: # only 3600 secs pm free
-        print("Used up my quota of Google TTS API. Exitting.")
+    gglSTTUsageSecs = jsonData['GoogleSTTUsageSecs']
+    if gglSTTUsageSecs > 3400: # only 3600 secs pm free
+        print("Used up my quota of Google STT API. Exitting.")
         exit()
 
     # i think next line execution is complete once upload is done. Then an identifier is used in next line to obtain results (which may take time if file is long). 
@@ -29,8 +29,8 @@ def getTimestampsFromGoogle(latestEpNo, roughCut):
     response = operation.result(timeout=240) 
     print("Results recvd.")
     
-    # update TTS secs usage in info.json. Rmmbr Ggle rounds off to increments of 15.
-    jsonData['GoogleTTSUsageSecs'] += response.total_billed_time.total_seconds()
+    # update STT secs usage in info.json. Rmmbr Ggle rounds off to increments of 15.
+    jsonData['GoogleSTTUsageSecs'] += response.total_billed_time.total_seconds()
     with open("info.json", "w") as f:
         json.dump(jsonData, f)
 

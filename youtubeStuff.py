@@ -63,7 +63,7 @@ def uploadVideoToYoutube(fname, title, desc, tags, category, privacyStatus):
         },
         media_body=MediaFileUpload(fname)
     )
-    print("Uploading vid to YouTube...")
+    input("??? shall I Uploading vid to YouTube...")
     response = request.execute()
     videoId = response['id']
     print("Done. Video ID: ", videoId)
