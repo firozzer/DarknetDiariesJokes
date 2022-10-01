@@ -7,6 +7,40 @@ from spRecogGoogle import getTimestampsFromGoogle
 from gcs import uploadFileToGCS, deleteFileFromGCS
 from youtubeStuff import uploadVideoToYoutube, deleteVideoFromYoutube, getYTVidStatus
 
+def getEpMP3nameAndJPEG(latestEpURL):
+    r = requests.get(latestEpURL)
+    if r.ok:
+        soup = BeautifulSoup(r.content, features='html.parser')
+
+        # get ep title
+        epName = soup.find('title').text[:-18]
+
+        # get artwork
+        epArtwork = soup.find('div', class_='hero__image')
+        epArtworkURL = "https://darknetdiaries.com" + epArtwork['style'][22:-1]
+        print(f"Downloading ep {latestEpNo} artwork...")
+        artworkReq = requests.get(epArtworkURL)
+        with open(f"{latestEpNo}.jpg", 'wb') as f:
+            f.write(artworkReq.content)
+        print("Done.")
+
+        # get mp3
+        if os.path.exists(f'{latestEpNo}.mp3'):
+            print("MP3 present on disk, skipping download")
+        else:
+            scriptElems = soup.find_all('script')
+            urlPattern = """https://.{10,90}mp3"""
+            mp3URL = re.search(urlPattern, str(scriptElems))[0]
+            print(f"Downloading ep {latestEpNo} mp3...")
+            mp3Req = requests.get(mp3URL)
+            with open(f'{latestEpNo}.mp3', 'wb') as f:
+                f.write(mp3Req.content)
+            print("Done.")
+        return epName
+    else:
+        print('New ep not up yet.')
+        exit()
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # get next Ep no to check
@@ -17,37 +51,8 @@ with open('info.json') as f:
 
 # get title, artwork & mp3 of ep
 latestEpURL = f"https://darknetdiaries.com/episode/{latestEpNo}/"
-r = requests.get(latestEpURL)
-if r.ok:
-    soup = BeautifulSoup(r.content, features='html.parser')
 
-    # get ep title
-    epName = soup.find('title').text[:-18]
-
-    # get artwork
-    epArtwork = soup.find('div', class_='hero__image')
-    epArtworkURL = "https://darknetdiaries.com" + epArtwork['style'][22:-1]
-    print(f"Downloading ep {latestEpNo} artwork...")
-    artworkReq = requests.get(epArtworkURL)
-    with open(f"{latestEpNo}.jpg", 'wb') as f:
-        f.write(artworkReq.content)
-    print("Done.")
-
-    # get mp3
-    if os.path.exists(f'{latestEpNo}.mp3'):
-        print("MP3 present on disk, skipping download")
-    else:
-        scriptElems = soup.find_all('script')
-        urlPattern = """https://.{10,90}mp3"""
-        mp3URL = re.search(urlPattern, str(scriptElems))[0]
-        print(f"Downloading ep {latestEpNo} mp3...")
-        mp3Req = requests.get(mp3URL)
-        with open(f'{latestEpNo}.mp3', 'wb') as f:
-            f.write(mp3Req.content)
-        print("Done.")
-else:
-    print('New ep not up yet.')
-    exit()
+epName = getEpMP3nameAndJPEG(latestEpURL)
 
 # PROCESSING THE MP3
 # grab last few mins of full ep,

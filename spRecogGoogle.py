@@ -25,9 +25,9 @@ def getTimestampsFromGoogle(latestEpNo, roughCut):
     # i think next line execution is complete once upload is done. Then an identifier is used in next line to obtain results (which may take time if file is long). 
     print(f"Google STT obtaining {filename} from GCS...")
     operation = client.long_running_recognize(config=config, audio=audio)
-    print("Done. Now, awaiting results...")
+    print("Done. Now, awaiting STT results...")
     response = operation.result(timeout=240) 
-    print("Results recvd.")
+    print("STT Results recvd.")
     
     # update STT secs usage in info.json. Rmmbr Ggle rounds off to increments of 15.
     jsonData['GoogleSTTUsageSecs'] += response.total_billed_time.total_seconds()
