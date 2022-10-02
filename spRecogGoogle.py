@@ -1,7 +1,7 @@
-import os, subprocess, json
+import os, subprocess, json, logging
 from google.cloud import speech
 
-def getTimestampsFromGoogle(latestEpNo, roughCut):
+def getTimestampsFromGoogle(latestEpNo, roughCut):    
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     client = speech.SpeechClient.from_service_account_file("googleSAfrzecoolKey.json")
 
@@ -19,15 +19,15 @@ def getTimestampsFromGoogle(latestEpNo, roughCut):
     with open('info.json') as f: jsonData = json.load(f)
     gglSTTUsageSecs = jsonData['GoogleSTTUsageSecs']
     if gglSTTUsageSecs > 3400: # only 3600 secs pm free
-        print("Used up my quota of Google STT API. Exitting.")
+        logging.warning("Used up my quota of Google STT API. Exitting.")
         exit()
 
     # i think next line execution is complete once upload is done. Then an identifier is used in next line to obtain results (which may take time if file is long). 
-    print(f"Google STT obtaining {filename} from GCS...")
+    logging.info(f"Google STT obtaining {filename} from GCS...")
     operation = client.long_running_recognize(config=config, audio=audio)
-    print("Done. Now, awaiting STT results...")
+    logging.info("Done. Now, awaiting STT results...")
     response = operation.result(timeout=240) 
-    print("STT Results recvd.")
+    logging.info("STT Results recvd.")
     
     # update STT secs usage in info.json. Rmmbr Ggle rounds off to increments of 15.
     jsonData['GoogleSTTUsageSecs'] += response.total_billed_time.total_seconds()
@@ -45,21 +45,21 @@ def getTimestampsFromGoogle(latestEpNo, roughCut):
             for wordData in result.alternatives[0].words:
                 zeWord = wordData.word.lower()
                 if zeWord == 'cylinder': 
-                    print(wordData)
+                    logging.info(wordData)
                     cutStart = float(str(wordData.end_time.seconds) + '.'+ str(wordData.end_time.microseconds)[:2]) + 0.2
                     cutStartObtained = True
-                    print("So, start cutting at", cutStart)
+                    logging.info(f"So, start cutting at {cutStart}")
                     break
         if cutStartObtained and ('diaries' in stuffFound or 'diary' in stuffFound or 'fairies' in stuffFound or 'fairy' in stuffFound):
             for wordData in result.alternatives[0].words:
                 zeWord = wordData.word.lower()
                 if zeWord == 'diary' or zeWord == "diaries" or zeWord == 'fairy' or zeWord == "fairies":
-                    print(wordData)
+                    logging.info(wordData)
                     cutEnd = float(str(wordData.end_time.seconds) + '.'+ str(wordData.end_time.microseconds)[:2]) + 2
                     if cutStart > cutEnd:
-                        print('cutEnd before cutStart, so incorrect. Continuing checking.')
+                        logging.info('cutEnd before cutStart, so incorrect. Continuing checking.')
                     else:
-                        print("And, stop cutting at", cutEnd)
+                        logging.info(f"And, stop cutting at {cutEnd}")
                         break
     epDuration = float(subprocess.check_output(f"ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {latestEpNo}.mp3", shell=True).decode('utf-8').strip()[:-4])
     cutStart =  round(epDuration - roughCut + cutStart, 2)

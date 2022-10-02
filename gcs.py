@@ -1,14 +1,15 @@
-# Imports the Google Cloud client library
+import logging
+
 from google.cloud import storage
 
 def uploadFileToGCS(pathh):
     bucketName = "drknt_drs_audio_hodler"
     storage_client = storage.Client.from_service_account_json('googleSAfrzecoolKey.json')
     bucket = storage_client.bucket(bucketName)
-    print(f"Uploading {pathh} to GCS...")
+    logging.info(f"Uploading {pathh} to GCS...")
     blob = bucket.blob(pathh)
     blob.upload_from_filename(pathh)
-    print("Done.")
+    logging.info("Done.")
     return True
 
 def deleteFileFromGCS(fname):
@@ -17,6 +18,6 @@ def deleteFileFromGCS(fname):
     bucket = storage_client.bucket(bucketName)    
     blob = bucket.blob(fname)
     blob.delete()
-    print(f"{fname} deleted from GCS.")
+    logging.info(f"{fname} deleted from GCS.")
     return True
 

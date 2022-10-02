@@ -1,4 +1,4 @@
-import os, re
+import os
 from PIL import Image, ImageFont, ImageDraw
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))

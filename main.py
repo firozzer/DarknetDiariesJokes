@@ -1,4 +1,4 @@
-import requests, re, subprocess, os, json, time, datetime
+import requests, re, subprocess, os, json, time, datetime, logging, sys
 
 from bs4 import BeautifulSoup
 
@@ -6,6 +6,8 @@ from imgPrsg import processZeJPG
 from spRecogGoogle import getTimestampsFromGoogle
 from gcs import uploadFileToGCS, deleteFileFromGCS
 from youtubeStuff import uploadVideoToYoutube, deleteVideoFromYoutube, getYTVidStatus
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def getEpMP3nameAndJPEG(latestEpURL):
     r = requests.get(latestEpURL)
@@ -18,30 +20,41 @@ def getEpMP3nameAndJPEG(latestEpURL):
         # get artwork
         epArtwork = soup.find('div', class_='hero__image')
         epArtworkURL = "https://darknetdiaries.com" + epArtwork['style'][22:-1]
-        print(f"Downloading ep {latestEpNo} artwork...")
+        logging.info(f"Downloading ep {latestEpNo} artwork...")
         artworkReq = requests.get(epArtworkURL)
         with open(f"{latestEpNo}.jpg", 'wb') as f:
             f.write(artworkReq.content)
-        print("Done.")
+        logging.info("Done.")
 
         # get mp3
         if os.path.exists(f'{latestEpNo}.mp3'):
-            print("MP3 present on disk, skipping download")
+            logging.info("MP3 present on disk, skipping download")
         else:
             scriptElems = soup.find_all('script')
             urlPattern = """https://.{10,90}mp3"""
             mp3URL = re.search(urlPattern, str(scriptElems))[0]
-            print(f"Downloading ep {latestEpNo} mp3...")
+            logging.info(f"Downloading ep {latestEpNo} mp3...")
             mp3Req = requests.get(mp3URL)
             with open(f'{latestEpNo}.mp3', 'wb') as f:
                 f.write(mp3Req.content)
-            print("Done.")
+            logging.info("Done.")
         return epName
     else:
-        print('New ep not up yet.')
+        logging.info(f'Ep {latestEpNo} not up yet.')
         exit()
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+# configure logging settings
+sys.excepthook = handle_exception # this helps to log all uncaught exceptions
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler("darknet.log"), logging.StreamHandler()])
+logging.getLogger("urllib3").setLevel(logging.INFO) #as these guys spam a lot in DEBUG
 
 # get next Ep no to check
 with open('info.json') as f:
@@ -51,7 +64,6 @@ with open('info.json') as f:
 
 # get title, artwork & mp3 of ep
 latestEpURL = f"https://darknetdiaries.com/episode/{latestEpNo}/"
-
 epName = getEpMP3nameAndJPEG(latestEpURL)
 
 # PROCESSING THE MP3
@@ -60,10 +72,10 @@ roughCut = 90
 # passing af with s16 bit depth to create smaller (half size) file. ac 1 specifies only 1 audio channel needed othewse Google gets thrown.
 subprocess.run(f"ffmpeg -y -sseof -{roughCut} -i {latestEpNo}.mp3 -af aformat=s16:44100 -ac 1 {latestEpNo}c.flac", shell=True)
 
-#uploading to GCS so GSTT can process it
+#uploading to GCS so GSTT can process it. Direct uploads from local system are restricted to 60 secs / 10 MB max.
 succeeded = uploadFileToGCS(f"{latestEpNo}c.flac")
 if not succeeded: 
-    print("Problem in gcs.py upload, exiting.")
+    logging.warning("Problem in GoogCloudStorage file uploading, exiting.")
     exit()
 
 # get exact timestamps using Google STT
@@ -75,7 +87,7 @@ subprocess.run(f"ffmpeg -y -ss {cutStart} -to {cutEnd} -i {latestEpNo}.mp3 -c co
 # PROCESSING THE JPG
 succeeded = processZeJPG(f"{latestEpNo}.jpg", epName)
 if not succeeded: 
-    print('Problem in artwork processing')
+    logging.warning('Problem in artwork processing')
     exit()
 
 # add jpg to mp3
@@ -102,15 +114,15 @@ newVidID = uploadVideoToYoutube(ytFilename,ytTitle,ytDesc,ytTags,ytCategory,ytPr
 
 succeeded = deleteFileFromGCS(f"{latestEpNo}c.flac")
 if not succeeded: 
-    print("Problem in gcs.py upload, exiting.")
+    logging.warning("Problem in GoogCloudStorage file deletion, exiting.")
     exit()
 
-print('Waiting for uploaded video to get processed...')
+logging.info('Waiting for uploaded video to get processed...')
 while getYTVidStatus(newVidID) != 'processed':
     time.sleep(30)
-# print('Done. Deleting old video from YouTube...')
-# deleteVideoFromYoutube(oldVidID)
-# print("Done.")
+logging.info('Done. Deleting old video from YouTube...')
+deleteVideoFromYoutube(oldVidID)
+logging.info("Done.")
 
 #upadte info.json & descYTVid.txt with new data
 with open('info.json') as f: jsonData = json.load(f) # ncsry to open again as GSTT has been updated in file
@@ -121,4 +133,4 @@ with open("descYTVid.txt", 'w') as f: f.write(ytDesc)
 
 # Deleting ep.mp3, epc.flac, epf.mp3, epf.mkv, ep.jpg, epf.jpg, old YT vid & GCS:epc.flac.
 subprocess.run(f"rm ytVid.mkv {latestEpNo}f.* {latestEpNo}c.flac {latestEpNo}.*; mv ytVidNew.mkv ytVid.mkv", shell=True)
-print("Deleted all local files.")
+logging.info("Deleted all local files.")

@@ -1,10 +1,13 @@
-import pickle, os
-from urllib import request
+import pickle, os, logging
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload
 
+class MemoryCache(): # to tackle the "file_cache is only supported with oauth2client<4.0.0" logger warning of googleapicliet.discovery_cache
+    _CACHE = {}
+    def get(self, url): return MemoryCache._CACHE.get(url)
+    def set(self, url, content): MemoryCache._CACHE[url] = content
 
 def createServiceObj():
     CLIENT_SECRET_FILE = "oauthCS.json"
@@ -15,7 +18,6 @@ def createServiceObj():
     cred = None
 
     pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
-    # print(pickle_file)
 
     if os.path.exists(pickle_file):
         with open(pickle_file, 'rb') as token:
@@ -32,12 +34,10 @@ def createServiceObj():
             pickle.dump(cred, token)
 
     try:
-        service = build(API_SERVICE_NAME, API_VERSION, credentials=cred)
-        # print(API_SERVICE_NAME, 'service created successfully')
+        service = build(API_SERVICE_NAME, API_VERSION, credentials=cred, cache=MemoryCache())
         return service
     except Exception as e:
-        print(e)
-        print(f'Failed to create service instance for {API_SERVICE_NAME}')
+        logging.error(f'Failed to create service instance for {API_SERVICE_NAME}. Error is: {e}')
         os.remove(pickle_file)
         return None
 
@@ -63,10 +63,11 @@ def uploadVideoToYoutube(fname, title, desc, tags, category, privacyStatus):
         },
         media_body=MediaFileUpload(fname)
     )
-    input("??? shall I Uploading vid to YouTube...")
+    input("Upload vid???")
+    logging.info(f"Uploading '{title}' to YouTube...")
     response = request.execute()
     videoId = response['id']
-    print("Done. Video ID: ", videoId)
+    logging.info(f"Done. Video ID: {videoId}")
     return videoId
 
 def getYTVidStatus(id):
