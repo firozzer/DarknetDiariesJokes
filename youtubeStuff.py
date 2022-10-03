@@ -14,25 +14,19 @@ def createServiceObj():
     API_SERVICE_NAME = 'youtube'
     API_VERSION = 'v3'
     SCOPES = ['https://www.googleapis.com/auth/youtube']
-
     cred = None
-
     pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
-
     if os.path.exists(pickle_file):
         with open(pickle_file, 'rb') as token:
             cred = pickle.load(token)
-
     if not cred or not cred.valid:
         if cred and cred.expired and cred.refresh_token:
             cred.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
             cred = flow.run_local_server()
-
         with open(pickle_file, 'wb') as token:
             pickle.dump(cred, token)
-
     try:
         service = build(API_SERVICE_NAME, API_VERSION, credentials=cred, cache=MemoryCache())
         return service
@@ -40,11 +34,6 @@ def createServiceObj():
         logging.error(f'Failed to create service instance for {API_SERVICE_NAME}. Error is: {e}')
         os.remove(pickle_file)
         return None
-
-
-def deleteVideoFromYoutube(id):
-    service = createServiceObj()
-    response = service.videos().delete(id=id).execute()
 
 def uploadVideoToYoutube(fname, title, desc, tags, category, privacyStatus):
     service = createServiceObj()
@@ -61,9 +50,9 @@ def uploadVideoToYoutube(fname, title, desc, tags, category, privacyStatus):
             "privacyStatus": privacyStatus
           }
         },
-        media_body=MediaFileUpload(fname)
+        media_body=MediaFileUpload(fname),
+        notifySubscribers=False
     )
-    input("Upload vid???")
     logging.info(f"Uploading '{title}' to YouTube...")
     response = request.execute()
     videoId = response['id']
@@ -77,3 +66,16 @@ def getYTVidStatus(id):
         id=id
     ).execute()
     return request['items'][0]['status']['uploadStatus']
+
+def setThumbnailForYTVideo(vidID, thumbNPath):
+    service = createServiceObj()
+    request = service.thumbnails().set(
+            videoId=vidID,
+            media_body=MediaFileUpload(thumbNPath)
+        )
+    response = request.execute()
+    print(response)
+
+def deleteVideoFromYoutube(id):
+    service = createServiceObj()
+    response = service.videos().delete(id=id).execute()

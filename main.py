@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from imgPrsg import processZeJPG
 from spRecogGoogle import getTimestampsFromGoogle
 from gcs import uploadFileToGCS, deleteFileFromGCS
-from youtubeStuff import uploadVideoToYoutube, deleteVideoFromYoutube, getYTVidStatus
+from youtubeStuff import uploadVideoToYoutube, deleteVideoFromYoutube, getYTVidStatus, setThumbnailForYTVideo
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -55,6 +55,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     handlers=[logging.FileHandler("darknet.log"), logging.StreamHandler()])
 logging.getLogger("urllib3").setLevel(logging.INFO) #as these guys spam a lot in DEBUG
+logging.info("@@@@@@@ Darknet Diaries Script Started @@@@@@@@@")
 
 # get next Ep no to check
 with open('info.json') as f:
@@ -80,6 +81,7 @@ if not succeeded:
 
 # get exact timestamps using Google STT
 cutStart, cutEnd = getTimestampsFromGoogle(latestEpNo, roughCut)
+logging.info(f"Final cutStart & cutEnd are: {cutStart} {cutEnd}")
 
 # get final joke cut audio
 subprocess.run(f"ffmpeg -y -ss {cutStart} -to {cutEnd} -i {latestEpNo}.mp3 -c copy {latestEpNo}f.mp3", shell=True)
@@ -91,7 +93,9 @@ if not succeeded:
     exit()
 
 # add jpg to mp3
-subprocess.run(f"""ffmpeg -y -loop 1 -i {latestEpNo}f.jpg -i {latestEpNo}f.mp3 -shortest -acodec copy -vcodec libx265 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" {latestEpNo}f.mkv""", shell=True)
+logging.info("Adding JPG to cut-out joke audio...")
+subprocess.run(f"""ffmpeg -y -loop 1 -i {latestEpNo}f.jpg -i {latestEpNo}f.mp3 -shortest -acodec copy -vcodec libx265 -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" {latestEpNo}f.mkv""", shell=True) # encoding into tiny x265 file as later on uplading 100 MB+ YT vids crash on Oracle 1 GB RAM server
+logging.info("Done.")
 
 # join new ep to old eps
 with open("concat.txt", 'w') as f: f.write(f"file 'ytVid.mkv'\nfile '{latestEpNo}f.mkv")
@@ -120,7 +124,8 @@ if not succeeded:
 logging.info('Waiting for uploaded video to get processed...')
 while getYTVidStatus(newVidID) != 'processed':
     time.sleep(30)
-logging.info('Done. Deleting old video from YouTube...')
+logging.info('Done. Setting thumbnail for new video then deleting old video from YT...')
+setThumbnailForYTVideo(newVidID, f"{latestEpNo}f.jpg")
 deleteVideoFromYoutube(oldVidID)
 logging.info("Done.")
 
