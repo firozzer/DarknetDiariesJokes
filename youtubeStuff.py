@@ -73,9 +73,8 @@ def setThumbnailForYTVideo(vidID, thumbNPath):
             videoId=vidID,
             media_body=MediaFileUpload(thumbNPath)
         )
-    response = request.execute()
-    print(response)
+    response = request.execute() # no use of this response
 
 def deleteVideoFromYoutube(id):
     service = createServiceObj()
-    response = service.videos().delete(id=id).execute()
+    response = service.videos().delete(id=id).execute() # no use of this response
