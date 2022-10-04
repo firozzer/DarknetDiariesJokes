@@ -2,6 +2,7 @@ import requests, re, subprocess, os, json, time, datetime, logging, sys
 
 from bs4 import BeautifulSoup
 
+from telegramCreds import tgBotToken, myTgChatID
 from imgPrsg import processZeJPG
 from spRecogGoogle import getTimestampsFromGoogle
 from gcs import uploadFileToGCS, deleteFileFromGCS
@@ -9,9 +10,16 @@ from youtubeStuff import uploadVideoToYoutube, deleteVideoFromYoutube, getYTVidS
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+def sendTgMsg(text='blablabla'):
+    url = f'https://api.telegram.org/bot{tgBotToken}/sendMessage'
+    payload = {'chat_id': myTgChatID, 'text': text}
+    r = requests.post(url,json=payload)
+    return r
+
 def getEpMP3nameAndJPEG(latestEpURL):
     r = requests.get(latestEpURL)
     if r.ok:
+        sendTgMsg(f"New Darknet Diaries ep {latestEpNo} is being processed. Take a look.")
         soup = BeautifulSoup(r.content, features='html.parser')
 
         # get ep title
@@ -106,7 +114,7 @@ ytFilename = "ytVidNew.mkv"
 ytTitle = f"Darknet Diaries Jokes (updated till Ep {latestEpNo} {epName})"
 ytTags = ['darknet diaries', 'jack rhysider', 'cybersecurity', 'tech', 'hacking', 'jokes']
 ytCategory = "24" # apparently for enternationament
-ytPrivacyStatus = 'private'
+ytPrivacyStatus = 'public'
 
 # constructing new Youtube description
 with open("descYTVid.txt") as f: ytDescOld = f.read()
@@ -115,6 +123,7 @@ tsOfNewAddition = str(datetime.timedelta(seconds=durationOfLastYTVid))
 ytDesc = ytDescOld + f"\n{tsOfNewAddition} - Ep {latestEpNo} {epName}"
 
 newVidID = uploadVideoToYoutube(ytFilename,ytTitle,ytDesc,ytTags,ytCategory,ytPrivacyStatus)
+sendTgMsg(f"Uploaded {ytTitle} to YT. Take a look.")
 
 succeeded = deleteFileFromGCS(f"{latestEpNo}c.flac")
 if not succeeded: 
