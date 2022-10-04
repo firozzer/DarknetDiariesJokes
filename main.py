@@ -63,7 +63,6 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     handlers=[logging.FileHandler("darknet.log"), logging.StreamHandler()])
 logging.getLogger("urllib3").setLevel(logging.INFO) #as these guys spam a lot in DEBUG
-logging.info("@@@@@@@ Darknet Diaries Script Started @@@@@@@@@")
 
 # get next Ep no to check
 with open('info.json') as f:
@@ -137,6 +136,14 @@ logging.info('Done. Setting thumbnail for new video then deleting old video from
 setThumbnailForYTVideo(newVidID, f"{latestEpNo}f.jpg")
 deleteVideoFromYoutube(oldVidID)
 logging.info("Done.")
+
+# updating Github Readme page with latest vid URL
+with open("README.md") as f: data = f.read()
+data = data.split('\n')
+data[2] = f'Check out all the jokes here: https://www.youtube.com/watch?v={newVidID}'
+newData = '\n'.join(data)
+with open("README.md", 'w') as f: f.write(newData)
+subprocess.run("""git add README.md ; git commit -m "updated latest YT URL"; git push github main""", shell=True)
 
 #upadte info.json & descYTVid.txt with new data
 with open('info.json') as f: jsonData = json.load(f) # ncsry to open again as GSTT has been updated in file
