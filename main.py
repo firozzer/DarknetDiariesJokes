@@ -122,7 +122,7 @@ tsOfNewAddition = str(datetime.timedelta(seconds=durationOfLastYTVid))
 ytDesc = ytDescOld + f"\n{tsOfNewAddition} - Ep {latestEpNo} {epName}"
 
 newVidID = uploadVideoToYoutube(ytFilename,ytTitle,ytDesc,ytTags,ytCategory,ytPrivacyStatus)
-sendTgMsg(f"Uploaded {ytTitle} to YT. Take a look.")
+sendTgMsg(f"Uploaded {ytTitle} to YT. Take a look: https://youtu.be/{newVidID}")
 
 succeeded = deleteFileFromGCS(f"{latestEpNo}c.flac")
 if not succeeded: 
