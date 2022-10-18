@@ -143,7 +143,7 @@ data = data.split('\n')
 data[2] = f'Check out all the jokes here: https://www.youtube.com/watch?v={newVidID}'
 newData = '\n'.join(data)
 with open("README.md", 'w') as f: f.write(newData)
-subprocess.run("""git add README.md descYTVid.txt ; git commit -m "updated latest YT URL"; git push github main""", shell=True)
+subprocess.run("""git add . ; git commit -m "auto git commit upon new vid upload"; git push github main""", shell=True)
 
 #upadte info.json & descYTVid.txt with new data
 with open('info.json') as f: jsonData = json.load(f) # ncsry to open again as GSTT has been updated in file
