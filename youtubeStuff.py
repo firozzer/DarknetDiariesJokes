@@ -10,12 +10,12 @@ class MemoryCache(): # to tackle the "file_cache is only supported with oauth2cl
     def set(self, url, content): MemoryCache._CACHE[url] = content
 
 def createServiceObj():
-    CLIENT_SECRET_FILE = "oauthCS.json"
+    CLIENT_SECRET_FILE = "myCreds/oauthCSforYT.json"
     API_SERVICE_NAME = 'youtube'
     API_VERSION = 'v3'
     SCOPES = ['https://www.googleapis.com/auth/youtube']
     cred = None
-    pickle_file = f'token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
+    pickle_file = f'myCreds/token_{API_SERVICE_NAME}_{API_VERSION}.pickle'
     if os.path.exists(pickle_file):
         with open(pickle_file, 'rb') as token:
             cred = pickle.load(token)

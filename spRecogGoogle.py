@@ -3,7 +3,7 @@ from google.cloud import speech
 
 def getTimestampsFromGoogle(latestEpNo, roughCut):    
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    client = speech.SpeechClient.from_service_account_file("googleSAfrzecoolKey.json")
+    client = speech.SpeechClient.from_service_account_file("myCreds/googleSrvcAcKey.json")
 
     filename = f"{latestEpNo}c.flac"
     audio = speech.RecognitionAudio(uri=f"gs://drknt_drs_audio_hodler/{filename}")

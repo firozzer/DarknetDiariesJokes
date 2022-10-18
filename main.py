@@ -2,11 +2,11 @@ import requests, re, subprocess, os, json, time, datetime, logging, sys
 
 from bs4 import BeautifulSoup
 
-from telegramCreds import tgBotToken, myTgChatID
 from imgPrsg import processZeJPG
 from spRecogGoogle import getTimestampsFromGoogle
 from gcs import uploadFileToGCS, deleteFileFromGCS
 from youtubeStuff import uploadVideoToYoutube, deleteVideoFromYoutube, getYTVidStatus, setThumbnailForYTVideo
+from myCreds.telegramCreds import tgBotToken, myTgChatID
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
