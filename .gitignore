@@ -13,7 +13,3 @@
 !calibri.ttf
 !info.json
 !req.txt
-
-# ...even if they are in subdirectories
-!*/
-
