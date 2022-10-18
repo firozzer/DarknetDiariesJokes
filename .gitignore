@@ -8,7 +8,11 @@
 !youtubeStuff.py
 !gcs.py
 !imgPrsg.py
-
+!descYTVid.txt
+!timestamps.txt
+!calibri.ttf
+!info.json
+!requirements.txt
 
 # ...even if they are in subdirectories
 !*/
