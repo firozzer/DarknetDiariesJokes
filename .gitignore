@@ -12,7 +12,7 @@
 !timestamps.txt
 !calibri.ttf
 !info.json
-!requirements.txt
+!req.txt
 
 # ...even if they are in subdirectories
 !*/
