@@ -1,7 +1,7 @@
 # Ignore everything
 *
 
-# But not these files...
+# But not these files
 !.gitignore
 !main.py
 !spRecogGoogle.py

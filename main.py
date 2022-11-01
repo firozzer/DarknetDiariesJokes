@@ -124,11 +124,6 @@ ytDesc = ytDescOld + f"\n{tsOfNewAddition} - Ep {latestEpNo} {epName}"
 newVidID = uploadVideoToYoutube(ytFilename,ytTitle,ytDesc,ytTags,ytCategory,ytPrivacyStatus)
 sendTgMsg(f"Uploaded {ytTitle} to YT. Take a look: https://youtu.be/{newVidID}")
 
-succeeded = deleteFileFromGCS(f"{latestEpNo}c.flac")
-if not succeeded: 
-    logging.warning("Problem in GoogCloudStorage file deletion, exiting.")
-    exit()
-
 logging.info('Waiting for uploaded video to get processed...')
 while getYTVidStatus(newVidID) != 'processed':
     time.sleep(30)
@@ -136,6 +131,11 @@ logging.info('Done. Setting thumbnail for new video then deleting old video from
 setThumbnailForYTVideo(newVidID, f"{latestEpNo}f.jpg")
 deleteVideoFromYoutube(oldVidID)
 logging.info("Done.")
+
+succeeded = deleteFileFromGCS(f"{latestEpNo}c.flac")
+if not succeeded: 
+    logging.warning("Problem in GoogCloudStorage file deletion, maybe file deleted during debugging earlier? Continuing nevertheless")
+    sendTgMsg("Problem in GoogCloudStorage file deletion in the Darknet Diaries auto Youtube upload project. Check it & delete file from GCS or you'll get charged there's some free tier limit.")
 
 # updating Github Readme page with latest vid URL
 with open("README.md") as f: data = f.read()
