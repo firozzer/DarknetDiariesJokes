@@ -137,6 +137,13 @@ if not succeeded:
     logging.warning("Problem in GoogCloudStorage file deletion, maybe file deleted during debugging earlier? Continuing nevertheless")
     sendTgMsg("Problem in GoogCloudStorage file deletion in the Darknet Diaries auto Youtube upload project. Check it & delete file from GCS or you'll get charged there's some free tier limit.")
 
+#upadte info.json & descYTVid.txt with new data
+with open('info.json') as f: jsonData = json.load(f) # ncsry to open again as GSTT has been updated in file
+jsonData['lastEpUppdToYT'] = latestEpNo
+jsonData['ytVidID'] = newVidID
+with open('info.json', "w") as f: json.dump(jsonData, f)
+with open("descYTVid.txt", 'w') as f: f.write(ytDesc)
+
 # updating Github Readme page with latest vid URL
 with open("README.md") as f: data = f.read()
 data = data.split('\n')
@@ -144,13 +151,6 @@ data[2] = f'Check out all the jokes here: https://www.youtube.com/watch?v={newVi
 newData = '\n'.join(data)
 with open("README.md", 'w') as f: f.write(newData)
 subprocess.run("""git add . ; git commit -m "auto git commit upon new vid upload"; git push github main""", shell=True)
-
-#upadte info.json & descYTVid.txt with new data
-with open('info.json') as f: jsonData = json.load(f) # ncsry to open again as GSTT has been updated in file
-jsonData['lastEpUppdToYT'] = latestEpNo
-jsonData['ytVidID'] = newVidID
-with open('info.json', "w") as f: json.dump(jsonData, f)
-with open("descYTVid.txt", 'w') as f: f.write(ytDesc)
 
 # Deleting ep.mp3, epc.flac, epf.mp3, epf.mkv, ep.jpg, epf.jpg, old YT vid & GCS:epc.flac.
 subprocess.run(f"rm ytVid.mkv {latestEpNo}f.* {latestEpNo}c.flac {latestEpNo}.*; mv ytVidNew.mkv ytVid.mkv", shell=True)
