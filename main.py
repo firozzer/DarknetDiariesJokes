@@ -39,8 +39,8 @@ def getEpMP3nameAndJPEG(latestEpURL):
             logging.info("MP3 present on disk, skipping download")
         else:
             scriptElems = soup.find_all('script')
-            urlPattern = """https://.{10,90}mp3"""
-            mp3URL = re.search(urlPattern, str(scriptElems))[0]
+            urlPattern = """"mp3":(.+")"""
+            mp3URL = re.search(urlPattern, str(scriptElems)).group(1).strip()[1:-1] # the indexex trimming in end are to get rid of quotes
             logging.info(f"Downloading ep {latestEpNo} mp3...")
             mp3Req = requests.get(mp3URL)
             with open(f'{latestEpNo}.mp3', 'wb') as f:
