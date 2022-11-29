@@ -77,21 +77,21 @@ epName = getEpMP3nameAndJPEG(latestEpURL)
 # PROCESSING THE MP3
 # grab last few mins of full ep,
 roughCut = 90
-# # passing af with s16 bit depth to create smaller (half size) file. ac 1 specifies only 1 audio channel needed othewse Google gets thrown.
-# subprocess.run(f"ffmpeg -y -sseof -{roughCut} -i {latestEpNo}.mp3 -af aformat=s16:44100 -ac 1 {latestEpNo}c.flac", shell=True)
+# passing af with s16 bit depth to create smaller (half size) file. ac 1 specifies only 1 audio channel needed othewse Google gets thrown.
+subprocess.run(f"ffmpeg -y -sseof -{roughCut} -i {latestEpNo}.mp3 -af aformat=s16:44100 -ac 1 {latestEpNo}c.flac", shell=True)
 
-# #uploading to GCS so GSTT can process it. Direct uploads from local system are restricted to 60 secs / 10 MB max.
-# succeeded = uploadFileToGCS(f"{latestEpNo}c.flac")
-# if not succeeded: 
-#     logging.warning("Problem in GoogCloudStorage file uploading, exiting.")
-#     exit()
+#uploading to GCS so GSTT can process it. Direct uploads from local system are restricted to 60 secs / 10 MB max.
+succeeded = uploadFileToGCS(f"{latestEpNo}c.flac")
+if not succeeded: 
+    logging.warning("Problem in GoogCloudStorage file uploading, exiting.")
+    exit()
 
-# # get exact timestamps using Google STT
-# cutStart, cutEnd = getTimestampsFromGoogle(latestEpNo, roughCut)
-# logging.info(f"Final cutStart & cutEnd are: {cutStart} {cutEnd}")
+# get exact timestamps using Google STT
+cutStart, cutEnd = getTimestampsFromGoogle(latestEpNo, roughCut)
+logging.info(f"Final cutStart & cutEnd are: {cutStart} {cutEnd}")
 
-# # get final joke cut audio
-# subprocess.run(f"ffmpeg -y -ss {cutStart} -to {cutEnd} -i {latestEpNo}.mp3 -c copy {latestEpNo}f.mp3", shell=True)
+# get final joke cut audio
+subprocess.run(f"ffmpeg -y -ss {cutStart} -to {cutEnd} -i {latestEpNo}.mp3 -c copy {latestEpNo}f.mp3", shell=True)
 
 # PROCESSING THE JPG
 succeeded = processZeJPG(f"{latestEpNo}.jpg", epName)
