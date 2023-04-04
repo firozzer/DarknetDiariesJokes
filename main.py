@@ -127,9 +127,9 @@ sendTgMsg(f"Uploaded {ytTitle} to YT. Take a look: https://youtu.be/{newVidID}")
 logging.info('Waiting for uploaded video to get processed...')
 while getYTVidStatus(newVidID) != 'processed':
     time.sleep(30)
-logging.info('Done. Setting thumbnail for new video then deleting old video from YT...')
+logging.info('Done. Setting thumbnail for new video...')
 setThumbnailForYTVideo(newVidID, f"{latestEpNo}f.jpg")
-deleteVideoFromYoutube(oldVidID)
+#deleteVideoFromYoutube(oldVidID)
 logging.info("Done.")
 
 succeeded = deleteFileFromGCS(f"{latestEpNo}c.flac")
