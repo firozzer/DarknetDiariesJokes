@@ -1,6 +1,6 @@
 # DarknetDiariesJokes
 
-Check out all the jokes here: https://www.youtube.com/watch?v=dlMUWLz-nbg
+Check out all the jokes here: https://www.youtube.com/watch?v=vt3xvOlOOII
 
 This is a script that runs regularly to check if a new DD ep is out, & if yes, then the latest joke is appended to YouTube video.
 
