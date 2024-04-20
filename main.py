@@ -105,8 +105,12 @@ subprocess.run(f"""ffmpeg -y -loop 1 -i {latestEpNo}f.jpg -i {latestEpNo}f.mp3 -
 logging.info("Done.")
 
 # join new ep to old eps
-with open("concat.txt", 'w') as f: f.write(f"file 'ytVid.mkv'\nfile '{latestEpNo}f.mkv")
-subprocess.check_output(f"""ffmpeg -y -f concat -i concat.txt -c copy ytVidNew.mkv; rm concat.txt""", shell=True)
+with open("concat.txt", 'w') as f: f.write(f"file 'ytVid.mkv'\nfile '{latestEpNo}f.mkv'")
+subprocess.check_output(f"""ffmpeg -y -f concat -i concat.txt -c copy ytVidNew.mkv""", shell=True)
+if os.name == 'nt': # means i'm running code on ASSASSIN Windows 10 PC
+    subprocess.check_output(f"""del concat.txt""", shell=True)
+else:
+    subprocess.check_output(f"""rm concat.txt""", shell=True)
 
 # upload to YouTube
 ytFilename = "ytVidNew.mkv"
@@ -144,14 +148,20 @@ jsonData['ytVidID'] = newVidID
 with open('info.json', "w") as f: json.dump(jsonData, f)
 with open("descYTVid.txt", 'w') as f: f.write(ytDesc)
 
-# updating Github Readme page with latest vid URL
-with open("README.md") as f: data = f.read()
-data = data.split('\n')
-data[2] = f'Check out all the jokes here: https://www.youtube.com/watch?v={newVidID}'
-newData = '\n'.join(data)
-with open("README.md", 'w') as f: f.write(newData)
-subprocess.run("""git add . ; git commit -m "auto git commit upon new vid upload"; git push github main""", shell=True)
+# updating Github Readme page with latest vid URL. Commented it all out for now as Github has changed auth method, will need to study.
+# with open("README.md") as f: data = f.read()
+# data = data.split('\n')
+# data[2] = f'Check out all the jokes here: https://www.youtube.com/watch?v={newVidID}'
+# newData = '\n'.join(data)
+# with open("README.md", 'w') as f: f.write(newData)
+# subprocess.run("""git add README.md descYTVid.txt info.json timestamps.txt""", shell=True)
+# subprocess.run(f"""git commit -m "auto git commit upon ep{latestEpNo} upload" """, shell=True)
+# subprocess.run("""git push github main" """, shell=True) # keep on separate lines so that Windows compatible
 
 # Deleting ep.mp3, epc.flac, epf.mp3, epf.mkv, ep.jpg, epf.jpg, old YT vid & GCS:epc.flac.
-subprocess.run(f"rm ytVid.mkv {latestEpNo}f.* {latestEpNo}c.flac {latestEpNo}.*; mv ytVidNew.mkv ytVid.mkv", shell=True)
+if os.name == 'nt': # means i'm running code on ASSASSIN Windows 10 PC
+    subprocess.run(f"del ytVid.mkv {latestEpNo}f.* {latestEpNo}c.flac {latestEpNo}.*", shell=True)
+    subprocess.run(f"ren ytVidNew.mkv ytVid.mkv", shell=True)
+else: # assuming else running on Ubuntu
+    subprocess.run(f"rm ytVid.mkv {latestEpNo}f.* {latestEpNo}c.flac {latestEpNo}.*; mv ytVidNew.mkv ytVid.mkv", shell=True)
 logging.info("Deleted all local files.")
