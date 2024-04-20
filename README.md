@@ -1,6 +1,6 @@
 # DarknetDiariesJokes
 
-Check out all the jokes here: https://www.youtube.com/watch?v=gilRQcuYi5I
+Check out all the jokes here: https://www.youtube.com/channel/UCIlz3ch2mCxvMQ8x7axTL_Q (this is link to my channel, most recent video should be the DarknetDiaries one. Currently disabled auto updating of this readme with latest ep URL as i'll need to figure out new Github auth thing.)
 
 This is a script that runs regularly to check if a new DD ep is out, & if yes, then the latest joke is appended to YouTube video.
 
